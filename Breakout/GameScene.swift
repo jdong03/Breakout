@@ -14,8 +14,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var paddle = SKSpriteNode()
     var brick = SKSpriteNode()
     var loseZone = SKSpriteNode()
-    let xnumber = Int.random(in: 0 ..< 10)
-    let ynumber = Int.random(in: 0 ..< 10)
+//    let xnumber = Int.random(in: 0 ..< 10)
+//    let ynumber = Int.random(in: 0 ..< 10)
     
     override func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
@@ -96,6 +96,23 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         loseZone.physicsBody?.isDynamic = false
         addChild(loseZone)
     }
+
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            let location = touch.location(in: self)
+            paddle.position.x = location.x
+        }
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        for touch in touches {
+            let location = touch.location(in: self)
+            paddle.position.x = location.x
+        }
+    }
+    
 }
+
 
 
