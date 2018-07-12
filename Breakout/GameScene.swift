@@ -9,18 +9,24 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     var ball = SKShapeNode()
     var paddle = SKSpriteNode()
     var brick = SKSpriteNode()
     var loseZone = SKSpriteNode()
+    let xnumber = Int.random(in: 0 ..< 10)
+    let ynumber = Int.random(in: 0 ..< 10)
     
     override func didMove(to view: SKView) {
+        physicsWorld.contactDelegate = self
+        self.physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         createBackground()
         makeBall()
         makePaddle()
         makeBrick()
         makeLoseZone()
+        ball.physicsBody?.isDynamic = true
+        ball.physicsBody?.applyImpulse(CGVector(dx: 3, dy: 5))
     }
     
     func createBackground() {
@@ -65,7 +71,7 @@ class GameScene: SKScene {
     }
     
     func makePaddle() {
-        paddle = SKSpriteNode(color: UIColor.white, size: CGSize(width: frame.width/4, height: 20))
+        paddle = SKSpriteNode(color: UIColor.yellow, size: CGSize(width: frame.width/4, height: 20))
         paddle.position = CGPoint(x: frame.midX, y: frame.minY + 125)
         paddle.name = "paddle"
         paddle.physicsBody = SKPhysicsBody(rectangleOf: paddle.size)
