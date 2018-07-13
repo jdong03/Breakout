@@ -5,28 +5,29 @@
 //  Created by Jason Dong on 7/12/18.
 //  Copyright © 2018 Jason Dong. All rights reserved.
 //
-
+import UIKit
 import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    
     var ball = SKShapeNode()
     var paddle = SKSpriteNode()
     var brick = SKSpriteNode()
     var loseZone = SKSpriteNode()
-//    let xnumber = Int.random(in: 0 ..< 10)
-//    let ynumber = Int.random(in: 0 ..< 10)
+    var messageLabel = SKLabelNode()
     
     override func didMove(to view: SKView) {
         physicsWorld.contactDelegate = self
         self.physicsBody = SKPhysicsBody(edgeLoopFrom: frame)
         createBackground()
+        makeBrick()
         makeBall()
         makePaddle()
-        makeBrick()
         makeLoseZone()
         ball.physicsBody?.isDynamic = true
         ball.physicsBody?.applyImpulse(CGVector(dx: 3, dy: 5))
+        createLabel()
     }
     
     func createBackground() {
@@ -78,7 +79,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         paddle.physicsBody?.isDynamic = false
         addChild(paddle)
     }
-
+    
     func makeBrick() {
         brick = SKSpriteNode(color: UIColor.blue, size: CGSize(width: 50, height: 20))
         brick.position = CGPoint(x: frame.midX, y: frame.maxY - 30)
@@ -87,7 +88,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         brick.physicsBody?.isDynamic = false
         addChild(brick)
     }
-
+    
     func makeLoseZone() {
         loseZone = SKSpriteNode(color: UIColor.red, size: CGSize(width: frame.width, height: 50))
         loseZone.position = CGPoint(x: frame.midX, y: frame.minY + 25)
@@ -97,7 +98,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(loseZone)
     }
     
-        override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             let location = touch.location(in: self)
             paddle.position.x = location.x
@@ -110,20 +111,51 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             paddle.position.x = location.x
         }
     }
-   
+    
     func didBegin(_ contact: SKPhysicsContact) {
         if contact.bodyA.node?.name == "brick" ||
-            contact.bodyB.node?.name == "brick" {
-            print("You win!")
+            contact.bodyB.node?.name == "brick"
+        {
+            messageLabel.text = "You win!"
             brick.removeFromParent()
             ball.removeFromParent()
+            
+            alert(title: "Congratulations!")
         }
         if contact.bodyA.node?.name == "loseZone" ||
-            contact.bodyB.node?.name == "loseZone" {
-            print("You lose!")
+            contact.bodyB.node?.name == "loseZone"
+        {
+            messageLabel.text = "You lose!"
             ball.removeFromParent()
+            brick.removeFromParent()
+            
+            alert(title: "Trash")
         }
     }
+    func RestartGame() {
+        makeBall()
+        ball.physicsBody?.isDynamic = true
+        ball.physicsBody?.applyImpulse(CGVector(dx: 3, dy: 5))
+        messageLabel.text = ""
+        makeBrick()
+        
+    }
+    func createLabel() {
+        messageLabel.text = ""
+        messageLabel.position = CGPoint(x: frame.midX, y: frame.midY)
+        addChild(messageLabel)
+    }
+    func alert(title: String) {
+        let endOfGameAlert = UIAlertController(title: title, message:nil, preferredStyle: .alert)
+        let restartGameAction = UIAlertAction(title: "Play Again", style: .default) {
+            (action) in
+            self.RestartGame()
+        }
+        endOfGameAlert.addAction(restartGameAction)
+        self.view?.window?.rootViewController?.present(endOfGameAlert, animated: true, completion: nil)
+    }
 }
+
+
 
 
